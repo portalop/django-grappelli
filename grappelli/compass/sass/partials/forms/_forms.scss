@@ -13,11 +13,22 @@
     &.required {
         @include grp-form-label-required;
     }
+    &.ubicacion {
+        color: $grp-link-color;
+    }
 }
 fieldset.grp-module {
     .grp-row label {
         margin: 6px 0 6px;
         @include grp-label;
+    }
+}
+
+.gestion_patrimonio-objeto .grp-row .grp-cell, .gestion_patrimonio-objeto .grp-row.grp-cells-1 {
+    &.ubicacion, &.lugar, &.autor, &.descripcion, &.datacion, &.propietario {
+        label {
+            color: $grp-link-color;
+        }
     }
 }
 
@@ -305,7 +316,7 @@ ul.radiolist.inline, ul.checkboxlist.inline {
     position: relative;
     float: left;
     overflow: hidden;
-    width: 758px;
+    width: 458px;
     .selector-available, 
     .selector-chosen {
         float: left;
@@ -406,8 +417,8 @@ ul.radiolist.inline, ul.checkboxlist.inline {
             content: " " url('../images/icons/selector-add-m2m-vertical_hover.png');
         }
         select[multiple=multiple] {
-            width: 758px !important;
-            max-width: 758px !important;
+            width: 458px !important;
+            max-width: 458px !important;
         }
         ul.selector-chooser {
             margin: 4px 0 0 356px;
@@ -645,10 +656,10 @@ textarea,
 .grp-row .vLargeTextField, 
 .grp-row .vXMLLargeTextField, 
 .grp-autocomplete-wrapper-m2m {
-    width: 758px;
+    width: 458px;
 }
 .grp-row select {
-    max-width: 758px;
+    max-width: 458px;
 }
 .grp-autocomplete-wrapper-m2m ul.grp-repr, 
 .grp-autocomplete-wrapper-m2m ul.grp-repr li {
