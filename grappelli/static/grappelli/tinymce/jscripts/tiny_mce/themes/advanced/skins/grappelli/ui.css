@@ -529,4 +529,8 @@ body.rtl .grappelliSkin .mceButton {
 
 .grappelliSkin span.mce_pagebreak { background-image: url('img/customized/button_pagebreak.png'); }
 
+.grappelliSkin span.mce_gallerycon {
+    background-image: url("img/buttons/photo.gif");
+}
+
 

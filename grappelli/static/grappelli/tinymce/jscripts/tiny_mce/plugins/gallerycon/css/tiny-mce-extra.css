@@ -1,0 +1,13 @@
+body#tinymce img.left, img.left {
+	float: left;
+	margin-right: 0.4em;
+}
+body#tinymce img.right, img.right {
+	float: right;
+	margin-left: 0.4em;
+}
+body#tinymce img.center, img.center {
+    display: block;
+	clear: both;
+	margin: 0 auto;
+}
