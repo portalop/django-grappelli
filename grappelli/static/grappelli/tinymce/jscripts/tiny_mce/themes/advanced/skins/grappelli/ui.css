@@ -533,4 +533,6 @@ body.rtl .grappelliSkin .mceButton {
     background-image: url("img/buttons/photo.gif");
 }
 
+.grappelliSkin span.mce_outdent { background-image: url('img/buttons/outdent.gif'); }
+.grappelliSkin span.mce_indent { background-image: url('img/buttons/indent.gif'); }
 
