@@ -2,12 +2,7 @@
 
 # python imports
 from functools import wraps
-
-# try to use json (2.6+) but stay compatible with 2.5.*
-try:
-    import json
-except ImportError:
-    from django.utils import simplejson as json
+import json
 
 try:
     from django.contrib.auth import get_user_model
@@ -23,6 +18,7 @@ from django.utils.safestring import mark_safe
 from django.utils.translation import get_language
 from django.template.loader import get_template
 from django.template.context import Context
+from django.utils.translation import ugettext as _
 
 # grappelli imports
 from grappelli.settings import ADMIN_TITLE, ADMIN_URL, SWITCH_USER, SWITCH_USER_ORIGINAL, SWITCH_USER_TARGET, CLEAN_INPUT_TYPES
@@ -48,7 +44,6 @@ def get_content_types(parser, token):
     Returns a list of installed applications and models.
     Needed for lookup of generic relationships.
     """
-    tokens = token.contents.split()
     return do_get_generic_objects()
 
 
@@ -59,6 +54,15 @@ def get_admin_title():
     Returns the Title for the Admin-Interface.
     """
     return ADMIN_TITLE
+
+
+# SITE_TITLE
+@register.simple_tag
+def get_site_title():
+    """
+    Returns the Title for the Admin-Interface.
+    """
+    return ADMIN_TITLE or _("Django site admin")
 
 
 # RETURNS CURRENT LANGUAGE
