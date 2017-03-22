@@ -1,13 +1,13 @@
 .. |grappelli| replace:: Grappelli
 .. |filebrowser| replace:: FileBrowser
-.. |grappelliversion| replace:: 2.6.1
+.. |grappelliversion| replace:: 2.9.1
 
 .. _quickstart:
 
 Quick start guide
 =================
 
-For using |grappelli| |grappelliversion|, `Django 1.7 <http://www.djangoproject.com>`_ needs to be installed and an `Admin Site <http://docs.djangoproject.com/en/1.7/ref/contrib/admin/>`_ has to be activated.
+For using |grappelli| |grappelliversion|, `Django 1.10 <http://www.djangoproject.com>`_ needs to be installed and an `Admin Site <http://docs.djangoproject.com/en/1.10/ref/contrib/admin/>`_ has to be activated.
 
 Installation
 ------------
@@ -34,28 +34,28 @@ Add URL-patterns. The grappelli URLs are needed for related–lookups and autoco
 
 .. code-block:: python
 
-    urlpatterns = patterns('',
-        (r'^grappelli/', include('grappelli.urls')), # grappelli URLS
-        (r'^admin/',  include(admin.site.urls)), # admin site
-    )
-
-Make sure ``AppDirectoriesFinder`` is first with your ``STATICFILES_FINDERS``:
-
-.. code-block:: python
-
-    STATICFILES_FINDERS = (
-        'django.contrib.staticfiles.finders.AppDirectoriesFinder',
-        'django.contrib.staticfiles.finders.FileSystemFinder',
-    )
+    urlpatterns = [
+        url(r'^grappelli/', include('grappelli.urls')), # grappelli URLS
+        url(r'^admin/', include(admin.site.urls)), # admin site
+    ]
 
 Add the request context processor (needed for the Dashboard and the Switch User feature):
 
 .. code-block:: python
+    :emphasize-lines: 7
 
-    TEMPLATE_CONTEXT_PROCESSORS = (
-        ...
-        "django.core.context_processors.request",
-    )
+    TEMPLATES = [
+        {
+            ...
+            'OPTIONS': {
+                'context_processors': [
+                    ...
+                    'django.template.context_processors.request',
+                    ...
+                ],
+            },
+        },
+    ]
 
 Collect the media files:
 

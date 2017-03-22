@@ -13,9 +13,6 @@ While |grappelli| is mainly about the look & feel of the admin interface, it als
 Available Settings
 ------------------
 
-.. versionadded:: 2.5.4
-    Added setting ``GRAPPELLI_CLEAN_INPUT_TYPES``.
-
 ``GRAPPELLI_ADMIN_TITLE``
     The Site Title of your admin interface. Change this instead of changing index.html
 
@@ -44,7 +41,7 @@ Available Settings
 Collapsibles
 ------------
 
-Use the ``classes`` property in order to define collapsibles for a `ModelAdmin <http://docs.djangoproject.com/en/1.7/ref/contrib/admin/#modeladmin-objects>`_ or an `InlineModelAdmin <http://docs.djangoproject.com/en/1.7/ref/contrib/admin/#inlinemodeladmin-objects>`_. Possible values are ``grp-collapse grp-open`` and ``grp-collapse grp-closed``:
+Use the ``classes`` property in order to define collapsibles for a `ModelAdmin <http://docs.djangoproject.com/en/1.10/ref/contrib/admin/#modeladmin-objects>`_ or an `InlineModelAdmin <http://docs.djangoproject.com/en/1.10/ref/contrib/admin/#inlinemodeladmin-objects>`_. Possible values are ``grp-collapse grp-open`` and ``grp-collapse grp-closed``:
 
 .. code-block:: python
 
@@ -69,7 +66,7 @@ Use the ``classes`` property in order to define collapsibles for a `ModelAdmin <
     class TabularItemInline(admin.TabularInline):
         classes = ('grp-collapse grp-open',)
 
-With `StackedInlines <https://docs.djangoproject.com/en/1.7/ref/contrib/admin/#django.contrib.admin.StackedInline>`_, an additional property ``inline_classes`` is available to define the default collapsible state of inline items (as opposed to the inline group):
+With `StackedInlines <https://docs.djangoproject.com/en/1.10/ref/contrib/admin/#django.contrib.admin.StackedInline>`_, an additional property ``inline_classes`` is available to define the default collapsible state of inline items (as opposed to the inline group):
 
 .. code-block:: python
 
@@ -89,7 +86,7 @@ For using drag/drop with inlines, you need to add a ``PositiveIntegerField`` to 
     class MyInlineModel(models.Model):
         mymodel = models.ForeignKey(MyModel)
         # position field
-        position = models.PositiveSmallIntegerField("Position")
+        position = models.PositiveSmallIntegerField("Position", null=True)
         class Meta:
             ordering = ['position']
 
@@ -103,11 +100,20 @@ Now, define the ``sortable_field_name`` with your ``InlineModelAdmin``:
         sortable_field_name = "position"
 
 The inline rows are reordered based on the sortable field (with a templatetag ``formsetsort``). When submitting a form, the values of the sortable field are reindexed according to the position of each row.
+We loop through each field of each row and check if the field has a value. If at least one value is given for a row, the sortable field is being updated. In order to exclude specific fields from this behaviour, use :ref:`Sortable Excludes <customizationsortableexcludes>`.
+
 In case of errors (somewhere within the form), the position of inline rows is preserved. This also applies to rows prepared for deletion while empty rows are being moved to the end of the formset.
 
 Besides using the drag/drop-handler, you are also able to manually update the position values. This is especially useful with lots of inlines. Just change the number within the position field and the row is automatically moved to the new position. Each row is being reindexed with submitting the form.
 
-There is also ``GrappelliSortableHiddenMixin``, which is a helper Mixin in order to hide the PositionField:
+.. _customizationgrappellisortablehiddenmixin:
+
+GrappelliSortableHiddenMixin
+++++++++++++++++++++++++++++
+
+There is also ``GrappelliSortableHiddenMixin``, which is a Mixin in order to hide the PositionField.
+Please note that this Mixin works with a default ``sortable_field_name = "position"``.
+Therefore, you only need to explicitly define the ``sortable_field_name`` if it's named differently.
 
 .. code-block:: python
 
@@ -115,28 +121,19 @@ There is also ``GrappelliSortableHiddenMixin``, which is a helper Mixin in order
 
     class MyInlineModelOptions(GrappelliSortableHiddenMixin, admin.TabularInline):
         fields = (... , "position",)
-        # defining the sortable is only necessary if the sortable field name
-        # is not 'position'
-        sortable_field_name = "customposition"
 
-There is also ``GrappelliSortableHiddenMixin``, which is a helper Mixin in order to hide the PositionField:
-
-.. code-block:: python
-
-    from grappelli.forms import GrappelliSortableHiddenMixin
-
-    class MyInlineModelOptions(GrappelliSortableHiddenMixin, admin.TabularInline):
-        fields = (... , "position",)
-        # defining the sortable is only necessary if the sortable field name
-        # is not 'position'
+    # explicitly defining the sortable is only necessary
+    # if the sortable field name is not 'position'
+    class MyCustomInlineModelOptions(GrappelliSortableHiddenMixin, admin.TabularInline):
+        fields = (... , "customposition",)
         sortable_field_name = "customposition"
 
 .. _customizationsortableexcludes:
 
 Sortable Excludes
------------------
++++++++++++++++++
 
-You may want to define ``sortable_excludes`` (either list or tuple) in order to exclude certain fields from having an effect on the position field. This is usually needed when a field has a default value:
+You may want to define ``sortable_excludes`` (either list or tuple) in order to exclude certain fields from having an effect on the position field. With the example below, the fields ``field_1`` and ``field_2`` have default values (so they are not empty with a new inline row). If we do not exclude this fields, the position field is updated for empty rows:
 
 .. code-block:: python
 
@@ -182,7 +179,7 @@ With Grappelli, you're able to add the representation of an object beneath the i
     class MyModel(models.Model):
         related_fk = models.ForeignKey(RelatedModel, verbose_name=u"Related Lookup (FK)")
         related_m2m = models.ManyToManyField(RelatedModel, verbose_name=u"Related Lookup (M2M)")
-    
+
     class MyModelOptions(admin.ModelAdmin):
         # define the raw_id_fields
         raw_id_fields = ('related_fk','related_m2m',)
@@ -199,7 +196,7 @@ With generic relations, related lookups are defined like this:
     from django.contrib.contenttypes import generic
     from django.contrib.contenttypes.models import ContentType
     from django.db import models
-    
+
     class MyModel(models.Model):
         # first generic relation
         content_type = models.ForeignKey(ContentType, blank=True, null=True, related_name="content_type")
@@ -209,7 +206,7 @@ With generic relations, related lookups are defined like this:
         relation_type = models.ForeignKey(ContentType, blank=True, null=True, related_name="relation_type")
         relation_id = models.PositiveIntegerField(blank=True, null=True)
         relation_object = generic.GenericForeignKey("relation_type", "relation_id")
-    
+
     class MyModelOptions(admin.ModelAdmin):
         # define the related_lookup_fields
         related_lookup_fields = {
@@ -222,7 +219,7 @@ If your generic relation points to a model using a custom primary key, you need 
 
     class RelationModel(models.Model):
         cpk  = models.IntegerField(primary_key=True, unique=True, editable=False)
-        
+
         @property
         def id(self):
             return self.cpk
@@ -235,7 +232,7 @@ Example in Python 2:
 
     def __unicode__(self):
         return u"%s" % self.name
-    
+
     def related_label(self):
         return u"%s (%s)" % (self.name, self.id)
 
@@ -245,7 +242,7 @@ Example in Python 3:
 
     def __str__(self):
         return "%s" % self.name
-    
+
     def related_label(self):
         return "%s (%s)" % (self.name, self.id)
 
@@ -265,7 +262,7 @@ Add the staticmethod ``autocomplete_search_fields`` to all models you want to se
 
     class MyModel(models.Model):
         name = models.CharField(u"Name", max_length=50)
-    
+
         @staticmethod
         def autocomplete_search_fields():
             return ("id__iexact", "name__icontains",)
@@ -287,7 +284,7 @@ Defining autocomplete lookups is very similar to related lookups:
     class MyModel(models.Model):
         related_fk = models.ForeignKey(RelatedModel, verbose_name=u"Related Lookup (FK)")
         related_m2m = models.ManyToManyField(RelatedModel, verbose_name=u"Related Lookup (M2M)")
-    
+
     class MyModelOptions(admin.ModelAdmin):
         # define the raw_id_fields
         raw_id_fields = ('related_fk','related_m2m',)
@@ -304,7 +301,7 @@ This also works with generic relations:
     from django.contrib.contenttypes import generic
     from django.contrib.contenttypes.models import ContentType
     from django.db import models
-    
+
     class MyModel(models.Model):
         # first generic relation
         content_type = models.ForeignKey(ContentType, blank=True, null=True, related_name="content_type")
@@ -314,7 +311,7 @@ This also works with generic relations:
         relation_type = models.ForeignKey(ContentType, blank=True, null=True, related_name="relation_type")
         relation_id = models.PositiveIntegerField(blank=True, null=True)
         relation_object = generic.GenericForeignKey("relation_type", "relation_id")
-    
+
     class MyModelOptions(admin.ModelAdmin):
         # define the autocomplete_lookup_fields
         autocomplete_lookup_fields = {
@@ -327,7 +324,7 @@ If your generic relation points to a model using a custom primary key, you need 
 
     class RelationModel(models.Model):
         cpk  = models.IntegerField(primary_key=True, unique=True, editable=False)
-        
+
         @property
         def id(self):
             return self.cpk
@@ -335,7 +332,7 @@ If your generic relation points to a model using a custom primary key, you need 
 If the human-readable value of a field you are searching on is too large to be indexed (e.g. long text as SHA key) or is saved in a different format (e.g. date as integer timestamp), add a staticmethod ``autocomplete_term_adjust`` to the corresponding model with the appropriate transformation and perform the lookup on the indexed field:
 
 .. code-block:: python
-    
+
     class MyModel(models.Model):
         text = models.TextField(u"Long text")
         text_hash = models.CharField(u"Text hash", max_length=40, unique=True)
@@ -356,7 +353,7 @@ Example in Python 2:
 
     def __unicode__(self):
         return u"%s" % self.name
-    
+
     def related_label(self):
         return u"%s (%s)" % (self.name, self.id)
 
@@ -366,7 +363,7 @@ Example in Python 3:
 
     def __str__(self):
         return "%s" % self.name
-    
+
     def related_label(self):
         return "%s (%s)" % (self.name, self.id)
 
@@ -436,12 +433,17 @@ You sometimes might need to see the admin interface as a different user (e.g. in
 .. note::
     This functionality might change with future releases.
 
+.. warning::
+    If you are using a custom user model and want to turn this feature on, pay attention to the following topics:
+
+    * if ``is_superuser`` is neither a field nor a property of your user model, you will have to set both ``GRAPPELLI_SWITCH_USER_ORIGINAL`` and ``GRAPPELLI_SWITCH_USER_TARGET`` to functions; failing to do so will break the admin area. If you followed the instructions in the `Django docs <https://docs.djangoproject.com/en/1.10/topics/auth/customizing/#a-full-example>`_, ``is_superuser`` won't be a field nor a property of your user model. If you define ``is_superuser`` as a property of your model, the admin area will get back to work.
+    * if ``is_staff`` is not a field, and/or ``is_superuser`` is neither a field nor a property of your user model, the Grappelli tests will be broken (because e.g. of some ``user.is_staff = True`` instructions). This -again- is your case if you followed the `Django docs on customizing user model <https://docs.djangoproject.com/en/1.10/topics/auth/customizing/#a-full-example>`_, where ``is_staff`` is defined as a property (as opposite to a field).
+
+
 .. _cleaninputtypes:
 
 Clean input types
 -----------------
-
-.. versionadded:: 2.5.4
 
 With setting ``GRAPPELLI_CLEAN_INPUT_TYPES`` to ``True``, |grappelli| automatically replaces all HTML5 input types (search, email, url, tel, number, range, date month, week, time, datetime, datetime-local, color) with ``type="text"``. This is useful if you want to avoid browser inconsistencies with the admin interface. Moreover, you remove frontend form validation and thereby ensure a consistent user experience.
 

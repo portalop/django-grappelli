@@ -8,15 +8,10 @@
 Changelog
 =========
 
-2.6.2 (not yet released)
+2.9.2 (not yet released)
 ------------------------
 
-* Fixed: removed _to_field from generic lookups.
-* Fixed: used user.pk instead of user.id with dashboard module.
-* Fixed: unique appconfig with grappelli.dashboard.
-* Improved: grappelli admin title is used for site title as well (if given).
+2.9.1 (November 8th 2016)
+-------------------------
 
-2.6.1 (September 10th 2014)
----------------------------
-
-* First release of Grappelli which is compatible with Django 1.7
+* First release of Grappelli which is compatible with Django 1.10.

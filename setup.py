@@ -7,7 +7,7 @@ def read(fname):
 
 setup(
     name='django-grappelli',
-    version='2.6.1',
+    version='2.9.1',
     description='A jazzy skin for the Django Admin-Interface.',
     long_description=read('README.rst'),
     url='http://django-grappelli.readthedocs.org',
@@ -15,7 +15,7 @@ setup(
     author='Patrick Kranzlmueller, Axel Swoboda (vonautomatisch)',
     author_email='office@vonautomatisch.at',
     license='BSD',
-    packages=find_packages(),
+    packages=find_packages(exclude=['test_project']),
     include_package_data=True,
     classifiers=[
         'Development Status :: 5 - Production/Stable',
